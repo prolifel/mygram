@@ -7,12 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (databaseConnection *DatabaseConnection) GetUsers(c *gin.Context) {
-	var users []models.User
-	databaseConnection.DB.Find(&users)
-	c.JSON(200, users)
-}
-
+// POST /users/register
 func (databaseConnection *DatabaseConnection) CreateUser(c *gin.Context) {
 	var (
 		user   models.User
@@ -37,9 +32,15 @@ func (databaseConnection *DatabaseConnection) CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(201, user)
+	c.JSON(201, gin.H{
+		"age":      user.Age,
+		"email":    user.Email,
+		"id":       user.ID,
+		"username": user.Username,
+	})
 }
 
+// POST /users/login
 func (databaseConnection *DatabaseConnection) UserLogin(c *gin.Context) {
 	var (
 		user           models.User
@@ -47,6 +48,7 @@ func (databaseConnection *DatabaseConnection) UserLogin(c *gin.Context) {
 		passwordString string
 	)
 
+	// Binding data
 	if err := c.ShouldBindJSON(&user); err != nil {
 		result = gin.H{
 			"error": err.Error(),
@@ -57,6 +59,7 @@ func (databaseConnection *DatabaseConnection) UserLogin(c *gin.Context) {
 
 	passwordString = string(user.Password)
 
+	// Check if user exists
 	if err := databaseConnection.DB.Where("email = ?", user.Email).Take(&user).Error; err != nil {
 		result = gin.H{
 			"error": "user not found",
@@ -65,6 +68,7 @@ func (databaseConnection *DatabaseConnection) UserLogin(c *gin.Context) {
 		return
 	}
 
+	// Check if password is correct
 	if err := helpers.ComparePassword([]byte(user.Password), []byte(passwordString)); !err {
 		result = gin.H{
 			"error": "password is incorrect",
@@ -73,6 +77,7 @@ func (databaseConnection *DatabaseConnection) UserLogin(c *gin.Context) {
 		return
 	}
 
+	// Create token
 	token := helpers.GenerateToken(user.ID, user.Email)
 	result = gin.H{
 		"token": token,
@@ -80,18 +85,7 @@ func (databaseConnection *DatabaseConnection) UserLogin(c *gin.Context) {
 	c.JSON(200, result)
 }
 
-func (databaseConnection *DatabaseConnection) GetUser(c *gin.Context) {
-	var user models.User
-	id := c.Params.ByName("id")
-	if err := databaseConnection.DB.Where("id = ?", id).First(&user).Error; err != nil {
-		c.JSON(404, gin.H{
-			"error": "user not found",
-		})
-		return
-	}
-	c.JSON(200, user)
-}
-
+// PUT /users/:id
 func (databaseConnection *DatabaseConnection) UpdateUser(c *gin.Context) {
 	var (
 		user   models.User
@@ -116,6 +110,24 @@ func (databaseConnection *DatabaseConnection) UpdateUser(c *gin.Context) {
 	}
 
 	databaseConnection.DB.Save(&user)
+	c.JSON(200, user)
+}
+
+func (databaseConnection *DatabaseConnection) GetUsers(c *gin.Context) {
+	var users []models.User
+	databaseConnection.DB.Find(&users)
+	c.JSON(200, users)
+}
+
+func (databaseConnection *DatabaseConnection) GetUser(c *gin.Context) {
+	var user models.User
+	id := c.Params.ByName("id")
+	if err := databaseConnection.DB.Where("id = ?", id).First(&user).Error; err != nil {
+		c.JSON(404, gin.H{
+			"error": "user not found",
+		})
+		return
+	}
 	c.JSON(200, user)
 }
 
