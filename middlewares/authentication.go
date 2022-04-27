@@ -18,7 +18,7 @@ func Authentication() gin.HandlerFunc {
 			})
 			return
 		}
-		c.Set("userDate", verifyToken)
+		c.Set("userData", verifyToken)
 		c.Next()
 	}
 }

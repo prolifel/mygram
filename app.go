@@ -3,6 +3,7 @@ package main
 import (
 	"mygram/config"
 	"mygram/controllers"
+	"mygram/middlewares"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -32,6 +33,8 @@ func main() {
 		users.GET("/", databaseConnection.GetUsers)
 		users.POST("/register", databaseConnection.CreateUser)
 		users.POST("/login", databaseConnection.UserLogin)
+		users.PUT("/", middlewares.Authentication(), databaseConnection.UpdateUser)
+		users.DELETE("/", middlewares.Authentication(), databaseConnection.DeleteUser)
 	}
 
 	router.Run(":3000")

@@ -3,8 +3,10 @@ package controllers
 import (
 	"mygram/helpers"
 	"mygram/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 // POST /users/register
@@ -92,7 +94,17 @@ func (databaseConnection *DatabaseConnection) UpdateUser(c *gin.Context) {
 		result gin.H
 	)
 
-	id := c.Params.ByName("id")
+	userData := c.MustGet("userData").(jwt.MapClaims)
+	id, _ := strconv.ParseInt(c.Query("userId"), 10, 64)
+
+	if int64(userData["id"].(float64)) != id {
+		result = gin.H{
+			"error": "you're not allowed to do this",
+		}
+		c.JSON(401, result)
+		return
+	}
+
 	if err := databaseConnection.DB.Where("id = ?", id).First(&user).Error; err != nil {
 		result = gin.H{
 			"error": "user not found",
@@ -101,7 +113,7 @@ func (databaseConnection *DatabaseConnection) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if err := c.BindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&user); err != nil {
 		result = gin.H{
 			"error": err.Error(),
 		}
@@ -110,7 +122,14 @@ func (databaseConnection *DatabaseConnection) UpdateUser(c *gin.Context) {
 	}
 
 	databaseConnection.DB.Save(&user)
-	c.JSON(200, user)
+	result = gin.H{
+		"id":         user.ID,
+		"email":      user.Email,
+		"username":   user.Username,
+		"age":        user.Age,
+		"updated_at": user.UpdatedAt,
+	}
+	c.JSON(200, result)
 }
 
 func (databaseConnection *DatabaseConnection) GetUsers(c *gin.Context) {
@@ -137,8 +156,10 @@ func (databaseConnection *DatabaseConnection) DeleteUser(c *gin.Context) {
 		result gin.H
 	)
 
-	id := c.Params.ByName("id")
-	if err := databaseConnection.DB.Where("id = ?", id).First(&user).Error; err != nil {
+	userData := c.MustGet("userData").(jwt.MapClaims)
+	userDataId := int64(userData["id"].(float64))
+
+	if err := databaseConnection.DB.Where("id = ?", userDataId).First(&user).Error; err != nil {
 		result = gin.H{
 			"error": "user not found",
 		}
