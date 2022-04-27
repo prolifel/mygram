@@ -5,7 +5,15 @@ import (
 	"mygram/controllers"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error loading .env file")
+	}
+}
 
 func main() {
 	db := config.DBInit()
@@ -23,6 +31,7 @@ func main() {
 	{
 		users.GET("/", databaseConnection.GetUsers)
 		users.POST("/register", databaseConnection.CreateUser)
+		users.POST("/login", databaseConnection.UserLogin)
 	}
 
 	router.Run(":3000")
