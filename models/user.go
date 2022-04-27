@@ -15,11 +15,11 @@ type User struct {
 	Age      int    `json:"age" gorm:"type:int" validate:"required,min=8"`
 }
 
-var validate *validator.Validate
+var userValidate *validator.Validate
 
 func (user *User) BeforeSave(tx *gorm.DB) (err error) {
-	validate = validator.New()
-	err = validate.Struct(user)
+	userValidate = validator.New()
+	err = userValidate.Struct(user)
 	return
 }
 
