@@ -151,7 +151,7 @@ func (databaseConnection *DatabaseConnection) DeleteUser(c *gin.Context) {
 	}
 	databaseConnection.DB.Delete(&user)
 	result = gin.H{
-		"message": "user deleted",
+		"message": "Your account has been successfully deleted",
 	}
 	c.JSON(200, result)
 }

@@ -120,7 +120,7 @@ func (databaseConnection *DatabaseConnection) UpdatePhoto(c *gin.Context) {
 	c.JSON(200, result)
 }
 
-// Delete /photos/
+// DELETE /photos/
 func (databaseConnection *DatabaseConnection) DeletePhoto(c *gin.Context) {
 	var (
 		photo  models.Photo
@@ -148,7 +148,7 @@ func (databaseConnection *DatabaseConnection) DeletePhoto(c *gin.Context) {
 
 	databaseConnection.DB.Delete(&photo)
 	result = gin.H{
-		"message": "photo deleted",
+		"message": "Your photo has been successfully deleted",
 	}
 	c.JSON(200, result)
 }

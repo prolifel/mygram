@@ -44,5 +44,13 @@ func main() {
 		photos.DELETE("/", middlewares.Authentication(), databaseConnection.DeletePhoto)
 	}
 
+	comments := router.Group("/comments")
+	{
+		comments.POST("/", middlewares.Authentication(), databaseConnection.CreateComment)
+		comments.GET("/", middlewares.Authentication(), databaseConnection.GetComments)
+		comments.PUT("/", middlewares.Authentication(), databaseConnection.UpdateComment)
+		comments.DELETE("/", middlewares.Authentication(), databaseConnection.DeleteComment)
+	}
+
 	router.Run(":3000")
 }
