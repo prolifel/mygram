@@ -19,13 +19,11 @@ func main() {
 		})
 	})
 
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-
-	router.GET("/users", databaseConnection.GetUsers)
+	users := router.Group("/users")
+	{
+		users.GET("/", databaseConnection.GetUsers)
+		users.POST("/register", databaseConnection.CreateUser)
+	}
 
 	router.Run(":3000")
 }

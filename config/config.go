@@ -22,6 +22,6 @@ func DBInit() *gorm.DB {
 		panic("failed to connect database")
 	}
 
-	db.AutoMigrate(models.Comment{}, models.Photo{}, models.SocialMedia{}, models.User{})
+	db.Debug().AutoMigrate(models.Comment{}, models.Photo{}, models.SocialMedia{}, models.User{})
 	return db
 }
