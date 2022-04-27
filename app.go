@@ -30,11 +30,18 @@ func main() {
 
 	users := router.Group("/users")
 	{
-		users.GET("/", databaseConnection.GetUsers)
 		users.POST("/register", databaseConnection.CreateUser)
 		users.POST("/login", databaseConnection.UserLogin)
 		users.PUT("/", middlewares.Authentication(), databaseConnection.UpdateUser)
 		users.DELETE("/", middlewares.Authentication(), databaseConnection.DeleteUser)
+	}
+
+	photos := router.Group("/photos")
+	{
+		photos.POST("/", middlewares.Authentication(), databaseConnection.CreatePhoto)
+		photos.GET("/", middlewares.Authentication(), databaseConnection.GetPhotos)
+		photos.PUT("/", middlewares.Authentication(), databaseConnection.UpdatePhoto)
+		photos.DELETE("/", middlewares.Authentication(), databaseConnection.DeletePhoto)
 	}
 
 	router.Run(":3000")

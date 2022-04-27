@@ -132,24 +132,7 @@ func (databaseConnection *DatabaseConnection) UpdateUser(c *gin.Context) {
 	c.JSON(200, result)
 }
 
-func (databaseConnection *DatabaseConnection) GetUsers(c *gin.Context) {
-	var users []models.User
-	databaseConnection.DB.Find(&users)
-	c.JSON(200, users)
-}
-
-func (databaseConnection *DatabaseConnection) GetUser(c *gin.Context) {
-	var user models.User
-	id := c.Params.ByName("id")
-	if err := databaseConnection.DB.Where("id = ?", id).First(&user).Error; err != nil {
-		c.JSON(404, gin.H{
-			"error": "user not found",
-		})
-		return
-	}
-	c.JSON(200, user)
-}
-
+// Delete /users/
 func (databaseConnection *DatabaseConnection) DeleteUser(c *gin.Context) {
 	var (
 		user   models.User
