@@ -52,5 +52,13 @@ func main() {
 		comments.DELETE("/", middlewares.Authentication(), databaseConnection.DeleteComment)
 	}
 
+	socialMedias := router.Group("/socialmedias")
+	{
+		socialMedias.POST("/", middlewares.Authentication(), databaseConnection.CreateSocialMedia)
+		socialMedias.GET("/", middlewares.Authentication(), databaseConnection.GetSocialMedias)
+		socialMedias.PUT("/", middlewares.Authentication(), databaseConnection.UpdateSocialMedia)
+		socialMedias.DELETE("/", middlewares.Authentication(), databaseConnection.DeleteSocialMedia)
+	}
+
 	router.Run(":3000")
 }

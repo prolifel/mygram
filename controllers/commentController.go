@@ -130,7 +130,7 @@ func (databaseConnection *DatabaseConnection) UpdateComment(c *gin.Context) {
 	c.JSON(200, result)
 }
 
-// DELETE /photos/
+// DELETE /comment/:commentId
 func (databaseConnection *DatabaseConnection) DeleteComment(c *gin.Context) {
 	var (
 		comment models.Comment
